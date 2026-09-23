@@ -1,0 +1,1199 @@
+:root {
+  /* Warm, friendly palette -- cream instead of stark white/gray, a muted
+     gold brand accent (chosen to sit apart from every species theme color
+     below), and warm-toned text instead of pure black/gray. Every color
+     here has been contrast-checked against WCAG AA (4.5:1 for text). */
+  --bg: #fbf7f1;
+  --surface: #ffffff;
+  --surface-alt: #f5efe6;
+  --text: #2e2620;
+  --text-muted: #7a6b5d;
+  --border: #e6dccb;
+  --accent: #936923;
+  --accent-soft: #f5e8d0;
+  --error: #c1483a;
+  --error-soft: #fbeceb;
+  --success: #478158;
+
+  --radius-sm: 8px;
+  --radius: 14px;
+  --radius-lg: 20px;
+
+  --shadow-sm: 0 1px 2px rgba(46, 38, 32, 0.06), 0 1px 1px rgba(46, 38, 32, 0.04);
+  --shadow-md: 0 8px 24px rgba(46, 38, 32, 0.08), 0 2px 6px rgba(46, 38, 32, 0.05);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    sans-serif;
+  color: var(--text);
+  /* A soft warm glow instead of one flat hex -- still brand-neutral cream,
+     just with some depth. Species-specific pages layer their own gradient
+     on top of this (see the theming rules further down). */
+  background:
+    radial-gradient(900px 480px at 12% -8%, #f8e6c8 0%, transparent 60%),
+    var(--bg);
+  background-attachment: fixed;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------------------------------------------------------------------
+   Layout
+   --------------------------------------------------------------------- */
+
+.page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 3rem;
+}
+
+/* ---------------------------------------------------------------------
+   Typography
+   --------------------------------------------------------------------- */
+
+h1 {
+  font-size: clamp(1.5rem, 1.2rem + 1.2vw, 1.875rem);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.5rem;
+  color: var(--text);
+}
+
+h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-top: 2rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--accent-soft);
+  color: var(--text);
+}
+
+p {
+  color: var(--text);
+}
+
+.hint {
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+}
+
+a {
+  color: var(--accent);
+}
+
+/* ---------------------------------------------------------------------
+   Forms
+   --------------------------------------------------------------------- */
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin: 1.25rem 0;
+  padding: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+
+label {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+input,
+textarea,
+select {
+  font: inherit;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+textarea {
+  min-height: 4.5rem;
+  resize: vertical;
+}
+
+input:hover,
+textarea:hover,
+select:hover {
+  border-color: var(--text-muted);
+}
+
+/* ---------------------------------------------------------------------
+   Buttons
+   --------------------------------------------------------------------- */
+
+button {
+  font: inherit;
+  cursor: pointer;
+  padding: 0.65rem 1rem;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    opacity 0.15s ease,
+    background-color 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+button:hover:not(:disabled) {
+  opacity: 0.92;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Focus ring, keyboard-only so mouse clicks stay clean */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px var(--accent-soft),
+    0 0 0 1px var(--accent);
+}
+
+/* Secondary / ghost button -- Cancel, and any lower-emphasis action next
+   to a primary one. */
+.secondary-btn {
+  background: transparent;
+  color: var(--accent);
+  border-color: var(--accent);
+  box-shadow: none;
+}
+
+/* Pure text link styled as a button (e.g. "Sign up" inline in a sentence). */
+.link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--accent);
+  font-weight: 700;
+  text-decoration: underline;
+  box-shadow: none;
+}
+
+.link-button:hover:not(:disabled) {
+  transform: none;
+  box-shadow: none;
+}
+
+/* A checkbox with its label on one line (e.g. "Add to reminders" on the
+   vaccine form) -- overrides the padded/bordered look the global input
+   rule gives every <input>, which only makes sense for text-like fields. */
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.checkbox-label input[type='checkbox'] {
+  width: auto;
+  padding: 0;
+  border: none;
+  background: none;
+  accent-color: var(--accent);
+}
+
+/* Small Edit/Delete triggers next to a piece of content. */
+.item-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.icon-btn {
+  background: transparent;
+  color: var(--text-muted);
+  border-color: var(--border);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  padding: 0.35rem 0.65rem;
+  box-shadow: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+
+.icon-btn:hover:not(:disabled) {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  transform: none;
+  box-shadow: none;
+}
+
+.icon-btn.danger:hover:not(:disabled) {
+  color: var(--error);
+  border-color: var(--error);
+  background: var(--error-soft);
+}
+
+/* A breadcrumb-style back link for drill-down pages (pet detail, chat). */
+.breadcrumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  font-weight: 700;
+  padding: 0;
+  margin-bottom: 1.25rem;
+  box-shadow: none;
+}
+
+.breadcrumb:hover:not(:disabled) {
+  color: var(--accent);
+  transform: none;
+  box-shadow: none;
+}
+
+/* An edit form embedded inside a card that's already styled (a list item,
+   a listing) -- strip the standalone card look the global "form" rule adds. */
+.inline-edit-form {
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: none;
+  box-shadow: none;
+}
+
+/* ---------------------------------------------------------------------
+   Lists & cards
+   --------------------------------------------------------------------- */
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.pet-list-item button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-align: left;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  box-shadow: var(--shadow-sm);
+}
+
+.pet-list-item .species-icon {
+  font-size: 1.25rem;
+}
+
+.pet-name-icon {
+  margin-right: 0.4rem;
+}
+
+/* Pet avatars -- shown in the pet list, pet page header, etc. (PetAvatar.jsx) */
+.pet-avatar-img {
+  border-radius: 999px;
+  object-fit: cover;
+  border: 2px solid var(--accent-soft);
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.pet-avatar-fallback {
+  border-radius: 999px;
+  background: var(--accent-soft);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Header row with a title on the left and a small action (e.g. the "+" add
+   button) in the corner on the right. */
+.page-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.page-header-row h1 {
+  margin-bottom: 0;
+}
+
+.fab-add {
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border-radius: 999px;
+  font-size: 1.25rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Pet page header: avatar beside name/details. */
+.pet-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.pet-header h1 {
+  margin-bottom: 0.25rem;
+}
+
+.pet-header .hint {
+  margin: 0;
+}
+
+.avatar-upload {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+
+/* Streak indicator + mini chart (grooming/activity logs). */
+.log-stats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.25rem;
+  margin: 1rem 0;
+  padding: 0.9rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.streak-badge {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.mini-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  height: 70px;
+  flex: 1;
+  min-width: 180px;
+}
+
+.mini-chart-bar-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  gap: 0.3rem;
+}
+
+.mini-chart-bar {
+  width: 100%;
+  max-width: 22px;
+  background: var(--accent);
+  border-radius: 4px 4px 0 0;
+  min-height: 2px;
+}
+
+.mini-chart-label {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+
+/* Tab nav on a pet's page -- reuses .nav-item's pill styling. */
+.pet-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 1.5rem 0 0;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.error {
+  color: var(--error);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.reminder-item,
+.log-item,
+.listing-card,
+.chat-message,
+.training-topic {
+  padding: 1rem 1.15rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+}
+
+.log-item,
+.listing-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Horizontal-scrolling row of entry cards on a pet's page (see
+   PetDetail.jsx's tab sections) -- replaces the old vertical <ul> list. */
+.log-scroll-row {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  padding: 0.15rem 0.15rem 0.6rem;
+  margin: 0 -0.15rem;
+  scroll-snap-type: x proximity;
+}
+
+.log-card {
+  flex: 0 0 260px;
+  scroll-snap-align: start;
+  border-radius: var(--radius);
+  border-left-color: var(--card-accent, var(--accent));
+  background: linear-gradient(165deg, var(--card-accent-soft, var(--surface-alt)) 0%, var(--surface) 55%);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.log-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.log-card.log-card-editing {
+  flex-basis: 320px;
+}
+
+/* Each feature section gets its own accent, distinct from the pet's
+   species color (which stays on the page background/buttons) -- makes the
+   cards feel lively and instantly recognizable by section when scrolling
+   through a pet's page. Kept light enough that text contrast on top is
+   unaffected, same approach as the species page backgrounds. */
+.log-card-vaccine {
+  --card-accent: #c1543f;
+  --card-accent-soft: #fbe9e5;
+}
+
+.log-card-vet-visit {
+  --card-accent: #3f6fa3;
+  --card-accent-soft: #e7eef7;
+}
+
+.log-card-feeding {
+  --card-accent: #c17d2e;
+  --card-accent-soft: #fbeeda;
+}
+
+.log-card-weight {
+  --card-accent: #7a5ba6;
+  --card-accent-soft: #efe7f7;
+}
+
+.log-card-grooming {
+  --card-accent: #3f9088;
+  --card-accent-soft: #e3f3f1;
+}
+
+.log-card-activity {
+  --card-accent: #5a9c3e;
+  --card-accent-soft: #eef6e7;
+}
+
+.log-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.log-card-icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  border-radius: 999px;
+  background: var(--card-accent-soft, var(--accent-soft));
+}
+
+.log-card-title {
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--text);
+  line-height: 1.25;
+}
+
+.log-card-hero {
+  font-weight: 800;
+  font-size: 1.4rem;
+  color: var(--card-accent, var(--accent));
+  line-height: 1.15;
+}
+
+.log-card-meta {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.log-card-badge {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: var(--card-accent-soft, var(--accent-soft));
+  color: var(--card-accent, var(--accent));
+}
+
+.log-card-badge.overdue {
+  background: var(--error-soft);
+  color: var(--error);
+}
+
+.log-card-trend {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+/* The single "Add [X]" action for a section, shown instead of an
+   always-open form -- deliberately full width so it reads as the one
+   primary action for that section. */
+.add-entry-btn {
+  width: 100%;
+  margin-top: 0.75rem;
+}
+
+/* Read-only "View details" panel on a log item (vaccines, feeding, weight,
+   grooming, activity) -- separate from the Edit form, shows every field. */
+.log-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.75rem 0.9rem;
+  background: var(--card-accent-soft, var(--surface-alt));
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+}
+
+.log-details p {
+  margin: 0;
+}
+
+.listing-card {
+  align-items: flex-start;
+}
+
+/* The listing shown right after posting (see SellPet.jsx) -- a subtle
+   highlight to mark it as "this is what you just created," not just
+   another card in a list. */
+.featured-listing {
+  border-left-color: var(--success);
+  box-shadow: var(--shadow-md);
+}
+
+.listing-card h2 {
+  margin: 0;
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+/* ---------------------------------------------------------------------
+   Onboarding
+   --------------------------------------------------------------------- */
+
+.onboarding {
+  margin: 2rem 0;
+  text-align: center;
+}
+
+.onboarding-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.onboarding-choices button {
+  flex: 1 1 200px;
+  max-width: 240px;
+  padding: 1rem;
+}
+
+/* ---------------------------------------------------------------------
+   Training
+   --------------------------------------------------------------------- */
+
+.training-topic {
+  padding: 1.25rem;
+  border-radius: var(--radius);
+}
+
+.training-topic h2 {
+  margin-top: 0;
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.training-topic a {
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-weight: 700;
+}
+
+.training-topic h3 {
+  margin: 1rem 0 0.4rem;
+  font-size: 0.9375rem;
+  color: var(--text);
+}
+
+.training-topic ol {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.training-topic ol li {
+  margin-bottom: 0.4rem;
+  color: var(--text);
+}
+
+.training-mistakes {
+  margin-top: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--error-soft);
+  border-radius: var(--radius-sm);
+}
+
+.training-mistakes h3 {
+  margin-top: 0;
+}
+
+.training-mistakes p {
+  margin: 0 0 0.4rem;
+  font-size: 0.9375rem;
+}
+
+.training-mistakes p:last-child {
+  margin-bottom: 0;
+}
+
+.training-timeline {
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+/* ---------------------------------------------------------------------
+   Marketplace + chat
+   --------------------------------------------------------------------- */
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.filters > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* A number input paired with a unit dropdown (e.g. age value + week/month/year). */
+.inline-fields {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.inline-fields input {
+  flex: 2;
+  min-width: 0;
+}
+
+.inline-fields select {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Add Pet step-by-step wizard (see PetForm.jsx). */
+.wizard-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+/* Vaccines step: "Finish" sits beside the heading instead of competing
+   with "Add vaccine" as the step's main action. */
+.wizard-step-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.wizard-step-header h2 {
+  margin-top: 0;
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.wizard-side-next {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Pet summary card shown after finishing the Add Pet wizard (Stage 4).
+   Themed via data-theme the same way .pet-page is -- see the species
+   theming rules further down. */
+.pet-summary-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 1.75rem;
+  margin: 1.25rem 0;
+  text-align: center;
+}
+
+.pet-summary-icon {
+  font-size: 3rem;
+  line-height: 1;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.pet-summary-card h1 {
+  margin: 0 0 0.25rem;
+}
+
+.pet-summary-details {
+  text-align: left;
+  margin-top: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pet-summary-details p {
+  margin: 0;
+}
+
+.pet-summary-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 1.5rem;
+}
+
+.location-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.location-suggestions {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  gap: 0;
+}
+
+.location-suggestions li + li {
+  border-top: 1px solid var(--border);
+}
+
+.location-suggestions button {
+  width: 100%;
+  text-align: left;
+  background: var(--surface);
+  color: var(--text);
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  font-weight: 500;
+}
+
+.location-suggestions button:hover:not(:disabled) {
+  background: var(--accent-soft);
+  color: var(--accent);
+  transform: none;
+  box-shadow: none;
+}
+
+/* "I want a pet" matching questionnaire + its results header. */
+.match-results-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+.match-results-header p {
+  margin: 0;
+}
+
+.listing-photo-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.listing-photo-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.listing-photo-thumb {
+  position: relative;
+  width: 72px;
+  height: 72px;
+}
+
+.listing-photo-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  display: block;
+}
+
+.listing-photo-remove {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--error);
+  border-color: var(--error);
+  box-shadow: var(--shadow-sm);
+}
+
+.listing-photo-strip {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.listing-photo-strip img {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+.chat-thread {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+.chat-message p {
+  margin: 0;
+}
+
+.chat-message p + p {
+  margin-top: 0.25rem;
+}
+
+/* ---------------------------------------------------------------------
+   Persistent app navigation (see AppHeader.jsx)
+   --------------------------------------------------------------------- */
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.app-header-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text);
+  background: none;
+  border: none;
+  padding: 0;
+  box-shadow: none;
+  white-space: nowrap;
+}
+
+.brand:hover:not(:disabled) {
+  transform: none;
+  box-shadow: none;
+  opacity: 0.8;
+}
+
+.main-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  flex: 1;
+}
+
+.nav-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  box-shadow: none;
+}
+
+.nav-item:hover:not(:disabled) {
+  background: var(--accent-soft);
+  color: var(--accent);
+  transform: none;
+  box-shadow: none;
+}
+
+.nav-item.active {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.nav-item.logout {
+  margin-left: auto;
+}
+
+.nav-item.logout:hover:not(:disabled) {
+  background: var(--error-soft);
+  color: var(--error);
+}
+
+/* ---------------------------------------------------------------------
+   Logged-out auth pages (see AuthLayout.jsx)
+   --------------------------------------------------------------------- */
+
+.auth-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1.25rem;
+  gap: 1.75rem;
+}
+
+.brand-lockup {
+  text-align: center;
+}
+
+.brand-lockup h1 {
+  margin: 0.25rem 0 0.125rem;
+}
+
+.brand-tagline {
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+  margin: 0;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 2rem;
+}
+
+.auth-card h1 {
+  font-size: 1.35rem;
+  margin-top: 0;
+}
+
+.auth-card form {
+  padding: 0;
+  margin: 1rem 0 0;
+  border: none;
+  background: none;
+  box-shadow: none;
+}
+
+/* ---------------------------------------------------------------------
+   Pet-specific theming: PetDetail wraps its content in .pet-page with a
+   data-theme attribute derived from the pet's species (see petTheme.js).
+   Each theme sets an accent color AND a background wash chosen for that
+   species' color psychology -- warm/calming for dogs, cool/elegant for
+   cats, and so on -- rather than reusing one flat background everywhere.
+   The wash stays very light (all gradient stops sit above ~90% lightness)
+   so it never competes with the white .surface cards holding actual text;
+   contrast for body text is unaffected by which theme is active.
+   --------------------------------------------------------------------- */
+.pet-page[data-theme='dog'],
+.pet-summary-card[data-theme='dog'] {
+  /* Warm, loyal, comforting -- the classic "good boy" palette. */
+  --accent: #ba5b36;
+  --accent-soft: #fbeae2;
+  background: linear-gradient(160deg, #fdecd8 0%, var(--bg) 65%);
+}
+
+.pet-page[data-theme='cat'],
+.pet-summary-card[data-theme='cat'] {
+  /* Cool, composed, a little aloof -- elegant rather than energetic. */
+  --accent: #5a7796;
+  --accent-soft: #e7eef4;
+  background: linear-gradient(160deg, #e9eff6 0%, var(--bg) 65%);
+}
+
+.pet-page[data-theme='bird'],
+.pet-summary-card[data-theme='bird'] {
+  /* Fresh and airy, like open sky and foliage. */
+  --accent: #3f8360;
+  --accent-soft: #e5f3ec;
+  background: linear-gradient(160deg, #e7f6ec 0%, var(--bg) 65%);
+}
+
+.pet-page[data-theme='fish'],
+.pet-summary-card[data-theme='fish'] {
+  /* Serene and aquatic -- calm rather than vivid. */
+  --accent: #2b7d9f;
+  --accent-soft: #e2f0f6;
+  background: linear-gradient(160deg, #e2f3f8 0%, var(--bg) 65%);
+}
+
+.pet-page[data-theme='rabbit'],
+.pet-summary-card[data-theme='rabbit'] {
+  /* Soft and gentle, a little playful. */
+  --accent: #9a5fae;
+  --accent-soft: #f3e9f7;
+  background: linear-gradient(160deg, #f5ecf9 0%, var(--bg) 65%);
+}
+
+.pet-page[data-theme='reptile'],
+.pet-summary-card[data-theme='reptile'] {
+  /* Earthy and grounded, like moss and terrarium greenery. */
+  --accent: #5f7e45;
+  --accent-soft: #ecf2e4;
+  background: linear-gradient(160deg, #eef4e6 0%, var(--bg) 65%);
+}
+
+/* ---------------------------------------------------------------------
+   Responsive
+   --------------------------------------------------------------------- */
+
+@media (max-width: 640px) {
+  .page {
+    padding: 1.5rem 1rem 2.5rem;
+  }
+
+  form {
+    padding: 1.1rem;
+  }
+
+  .nav-item .nav-label {
+    display: none;
+  }
+
+  .nav-item {
+    padding: 0.5rem;
+  }
+
+  .auth-card {
+    padding: 1.5rem;
+  }
+}
