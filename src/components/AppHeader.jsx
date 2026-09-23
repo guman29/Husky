@@ -29,14 +29,31 @@ function AppHeader({
   }
 
   return (
-    <header className="app-header">
-      <div className="app-header-inner">
-        <button type="button" className="brand" onClick={onDashboard}>
-          <Logo size={26} />
-          PetPal
-        </button>
+    <>
+      <header className="app-header">
+        {/* Centered brand bar -- a 3-column grid (spacer | logo | logout)
+            keeps the logo visually centered regardless of the logout
+            button's width, rather than fighting the nav items for space. */}
+        <div className="app-header-top">
+          <button type="button" className="brand" onClick={onDashboard}>
+            <Logo size={26} />
+            PetPal
+          </button>
+          <button
+            type="button"
+            className="logout-btn"
+            onClick={onLogout}
+            title="Log out"
+            aria-label="Log out"
+          >
+            🚪
+          </button>
+        </div>
 
-        <nav className="main-nav">
+        {/* Desktop: a proper second row below the brand bar, with room to
+            breathe. Hidden on mobile in favor of the fixed bottom tab bar
+            below -- see .bottom-nav. */}
+        <nav className="main-nav" aria-label="Primary">
           {NAV_ITEMS.map((item) => (
             <button
               key={item.key}
@@ -50,13 +67,26 @@ function AppHeader({
             </button>
           ))}
         </nav>
+      </header>
 
-        <button type="button" className="nav-item logout" onClick={onLogout} title="Log out">
-          <span aria-hidden="true">🚪</span>
-          <span className="nav-label">Log out</span>
-        </button>
-      </div>
-    </header>
+      {/* Mobile: a fixed bottom tab bar, icon over label, the pattern used
+          by Instagram/Swiggy/etc. Hidden on desktop -- see .main-nav. */}
+      <nav className="bottom-nav" aria-label="Primary">
+        {NAV_ITEMS.map((item) => (
+          <button
+            key={item.key}
+            type="button"
+            className={`bottom-nav-item${active === item.key ? ' active' : ''}`}
+            onClick={handlers[item.key]}
+          >
+            <span className="bottom-nav-icon" aria-hidden="true">
+              {item.icon}
+            </span>
+            <span className="bottom-nav-label">{item.label}</span>
+          </button>
+        ))}
+      </nav>
+    </>
   )
 }
 
