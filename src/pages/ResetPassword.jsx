@@ -41,7 +41,7 @@ function ResetPassword({ onDone }) {
         <h1>Password updated</h1>
         <p>Your password has been changed. You're now logged in.</p>
         <button type="button" onClick={onDone}>
-          Continue to PetPal
+          Continue to Husky
         </button>
       </AuthLayout>
     )
@@ -50,7 +50,7 @@ function ResetPassword({ onDone }) {
   return (
     <AuthLayout>
       <h1>Set a new password</h1>
-      <p>Choose a new password for your PetPal account.</p>
+      <p>Choose a new password for your Husky account.</p>
 
       <form onSubmit={handleSubmit}>
         <label htmlFor="reset-password">New password</label>

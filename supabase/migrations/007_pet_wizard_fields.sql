@@ -1,4 +1,4 @@
--- PetPal: structured age + location fields on pets (Stage 2 -- Add Pet
+-- Husky: structured age + location fields on pets (Stage 2 -- Add Pet
 -- step-by-step wizard). Run this once in the Supabase SQL Editor if your
 -- project already has the pets table from schema.sql.
 --

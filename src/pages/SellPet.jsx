@@ -171,7 +171,7 @@ function SellPet({ userId, userEmail }) {
           </button>
         )}
       </div>
-      <p>List a pet for other PetPal users to browse. No payments -- just contact info via chat.</p>
+      <p>List a pet for other Husky users to browse. No payments -- just contact info via chat.</p>
 
       {error && <p className="error">{error}</p>}
 
@@ -199,7 +199,7 @@ function SellPet({ userId, userEmail }) {
           />
 
           <p className="hint">
-            🔎 This listing is now visible to any signed-in PetPal user browsing the marketplace.
+            🔎 This listing is now visible to any signed-in Husky user browsing the marketplace.
           </p>
 
           <div className="item-actions">
@@ -221,7 +221,7 @@ function SellPet({ userId, userEmail }) {
         <form onSubmit={handleSubmit}>
           <p className="hint">
             🔎 Once posted, everything below (photos, breed, age, location, description) will be
-            visible to any signed-in PetPal user browsing the marketplace.
+            visible to any signed-in Husky user browsing the marketplace.
           </p>
 
           <label htmlFor="listing-type">Type</label>

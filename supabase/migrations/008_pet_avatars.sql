@@ -1,4 +1,4 @@
--- PetPal: pet avatar photos (Stage 5 -- pet main view changes). Run this
+-- Husky: pet avatar photos (Stage 5 -- pet main view changes). Run this
 -- once in the Supabase SQL Editor if your project already has the pets
 -- table. Creates a public storage bucket for avatar images and a column to
 -- point at them.

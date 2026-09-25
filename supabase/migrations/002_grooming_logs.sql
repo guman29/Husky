@@ -1,4 +1,4 @@
--- PetPal: grooming_logs (Stage 3 -- daily grooming log per pet)
+-- Husky: grooming_logs (Stage 3 -- daily grooming log per pet)
 -- Run this once in the Supabase SQL Editor (Project -> SQL Editor -> New query).
 
 create table public.grooming_logs (

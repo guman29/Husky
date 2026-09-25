@@ -61,7 +61,7 @@ function Dashboard({ userId, onSelectPet, onBrowsePets }) {
         <p>Loading pets…</p>
       ) : isNewUser && !showAddForm ? (
         <div className="onboarding">
-          <p>Welcome to PetPal! How would you like to get started?</p>
+          <p>Welcome to Husky! How would you like to get started?</p>
           <div className="onboarding-choices">
             <button type="button" onClick={() => setShowAddForm(true)}>
               I already have a pet

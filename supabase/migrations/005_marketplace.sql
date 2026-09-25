@@ -1,4 +1,4 @@
--- PetPal: listings + messages (Stage 7 -- marketplace + in-app chat)
+-- Husky: listings + messages (Stage 7 -- marketplace + in-app chat)
 -- Run this once in the Supabase SQL Editor (Project -> SQL Editor -> New query).
 
 -- listings: a pet someone is listing for sale/adoption. seller_email is

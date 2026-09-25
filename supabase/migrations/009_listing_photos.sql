@@ -1,4 +1,4 @@
--- PetPal: real photo uploads for marketplace listings (Stage 10). Run this
+-- Husky: real photo uploads for marketplace listings (Stage 10). Run this
 -- once in the Supabase SQL Editor if your project already has the listings
 -- table. Creates a public storage bucket for listing photos and a column
 -- to hold their URLs.

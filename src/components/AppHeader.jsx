@@ -37,7 +37,7 @@ function AppHeader({
         <div className="app-header-top">
           <button type="button" className="brand" onClick={onDashboard}>
             <Logo size={26} />
-            PetPal
+            Husky
           </button>
           <button
             type="button"

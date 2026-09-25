@@ -1,4 +1,4 @@
--- PetPal: reminders (Stage 6 -- custom reminders with browser notifications)
+-- Husky: reminders (Stage 6 -- custom reminders with browser notifications)
 -- Run this once in the Supabase SQL Editor (Project -> SQL Editor -> New query).
 
 create table public.reminders (

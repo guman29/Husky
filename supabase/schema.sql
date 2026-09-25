@@ -1,6 +1,6 @@
--- PetPal database schema
+-- Husky database schema
 -- Run this once in the Supabase SQL Editor (Project -> SQL Editor -> New query)
--- for a brand-new project. This file is kept up to date with every table PetPal
+-- for a brand-new project. This file is kept up to date with every table Husky
 -- uses; incremental changes to an *existing* project live as separate files in
 -- supabase/migrations/ (run those instead if you already have this schema).
 

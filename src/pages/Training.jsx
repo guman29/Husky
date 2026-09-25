@@ -3,7 +3,7 @@ import { supabase } from '../supabaseClient'
 import { trainingTips, speciesTips, breedTips } from '../trainingTips'
 
 function aiCacheKey(species, breed) {
-  return `petpal-ai-training-tips:${species}:${breed}`
+  return `husky-ai-training-tips:${species}:${breed}`
 }
 
 function TrainingTopicCard({ topic }) {

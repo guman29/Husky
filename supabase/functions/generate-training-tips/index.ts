@@ -1,4 +1,4 @@
-// PetPal: AI-generated training tips fallback (Stage 9). Called from
+// Husky: AI-generated training tips fallback (Stage 9). Called from
 // Training.jsx via supabase.functions.invoke('generate-training-tips', ...)
 // whenever a pet's specific breed isn't covered by the hand-written tips in
 // src/trainingTips.js. Keeps the Anthropic API key server-side -- it's never
@@ -52,7 +52,7 @@ Deno.serve(async (req) => {
 
   const subject = breed ? `a ${breed} (${species.toLowerCase()})` : `a ${species.toLowerCase()}`
 
-  const prompt = `You are an expert professional pet trainer writing for a pet-care app called PetPal. Write 2 in-depth training topics for ${subject}, focused on traits distinctive to this breed/species (temperament, energy level, common behavioral challenges) rather than generic advice that would apply to any pet.
+  const prompt = `You are an expert professional pet trainer writing for a pet-care app called Husky. Write 2 in-depth training topics for ${subject}, focused on traits distinctive to this breed/species (temperament, energy level, common behavioral challenges) rather than generic advice that would apply to any pet.
 
 Each topic needs real depth: a proper step-by-step technique an owner could actually follow, the mistakes that commonly undermine it, and a realistic timeline. Do not write short generic blurbs.
 

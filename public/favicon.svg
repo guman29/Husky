@@ -1,11 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
   <defs>
-    <linearGradient id="petpal-favicon-gradient" x1="0" y1="0" x2="1" y2="1">
+    <linearGradient id="husky-favicon-gradient" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#c68a3a" />
       <stop offset="100%" stop-color="#936923" />
     </linearGradient>
   </defs>
-  <circle cx="24" cy="24" r="22" fill="url(#petpal-favicon-gradient)" />
+  <circle cx="24" cy="24" r="22" fill="url(#husky-favicon-gradient)" />
   <g fill="#fffaf2">
     <ellipse cx="24" cy="30.5" rx="9.5" ry="7.5" />
     <ellipse cx="13.5" cy="18.5" rx="4.2" ry="5.4" transform="rotate(-22 13.5 18.5)" />

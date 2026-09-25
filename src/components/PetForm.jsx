@@ -240,7 +240,7 @@ function PetForm({ ownerId, onPetAdded, onViewPet }) {
         <span className="pet-summary-icon" aria-hidden="true">
           {getPetIcon(finishedPet.species)}
         </span>
-        <h1>{finishedPet.name} has joined PetPal! 🎉</h1>
+        <h1>{finishedPet.name} has joined Husky! 🎉</h1>
         <p className="hint">Here's everything you just entered.</p>
 
         <div className="pet-summary-details">

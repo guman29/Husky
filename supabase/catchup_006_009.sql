@@ -1,4 +1,4 @@
--- PetPal: idempotent catch-up for migrations 006-009. Safe to run
+-- Husky: idempotent catch-up for migrations 006-009. Safe to run
 -- regardless of which of those you've already applied -- every statement
 -- either uses IF NOT EXISTS/ON CONFLICT, or drops-then-recreates policies
 -- so re-running this never errors on "already exists".

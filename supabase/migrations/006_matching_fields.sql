@@ -1,4 +1,4 @@
--- PetPal: structured size/age fields on listings (Stage 1 -- "I want a pet"
+-- Husky: structured size/age fields on listings (Stage 1 -- "I want a pet"
 -- matching questionnaire). Run this once in the Supabase SQL Editor if your
 -- project already has the marketplace tables from 005_marketplace.sql.
 --

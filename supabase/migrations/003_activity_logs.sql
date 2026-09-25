@@ -1,4 +1,4 @@
--- PetPal: activity_logs (Stage 4 -- daily activity log per pet: walks, playtime, etc)
+-- Husky: activity_logs (Stage 4 -- daily activity log per pet: walks, playtime, etc)
 -- Run this once in the Supabase SQL Editor (Project -> SQL Editor -> New query).
 
 create table public.activity_logs (

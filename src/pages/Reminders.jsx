@@ -45,7 +45,7 @@ function Reminders({ userId }) {
 
       for (const reminder of due) {
         if (Notification.permission === 'granted') {
-          new Notification('PetPal reminder', { body: reminder.message })
+          new Notification('Husky reminder', { body: reminder.message })
         }
         await supabase.from('reminders').update({ notified: true }).eq('id', reminder.id)
       }
