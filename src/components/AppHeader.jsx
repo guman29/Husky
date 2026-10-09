@@ -17,6 +17,7 @@ function AppHeader({
   onBrowsePets,
   onSellPet,
   onInbox,
+  onSettings,
   onLogout,
 }) {
   const handlers = {
@@ -39,15 +40,26 @@ function AppHeader({
             <Logo size={26} />
             Husky
           </button>
-          <button
-            type="button"
-            className="logout-btn"
-            onClick={onLogout}
-            title="Log out"
-            aria-label="Log out"
-          >
-            🚪
-          </button>
+          <div className="header-actions">
+            <button
+              type="button"
+              className="logout-btn"
+              onClick={onSettings}
+              title="Settings"
+              aria-label="Settings"
+            >
+              ⚙️
+            </button>
+            <button
+              type="button"
+              className="logout-btn"
+              onClick={onLogout}
+              title="Log out"
+              aria-label="Log out"
+            >
+              🚪
+            </button>
+          </div>
         </div>
 
         {/* Desktop: a proper second row below the brand bar, with room to
