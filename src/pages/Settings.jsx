@@ -1,6 +1,23 @@
 import { useState } from 'react'
 import { supabase } from '../supabaseClient'
 
+// When an Edge Function returns a non-2xx response, supabase-js wraps it as
+// a FunctionsHttpError whose `.message` is just the generic "Edge Function
+// returned a non-2xx status code" -- the actual error our function sent
+// back (delete-account's jsonResponse({ error: ... })) lives on
+// `.context`, the raw Response object, and has to be read separately.
+async function extractFunctionErrorMessage(invokeError) {
+  if (invokeError?.context?.json) {
+    try {
+      const body = await invokeError.context.json()
+      if (body?.error) return body.error
+    } catch {
+      // Response body wasn't JSON -- fall through to the generic message.
+    }
+  }
+  return invokeError.message
+}
+
 function Settings({ userEmail }) {
   const [confirming, setConfirming] = useState(false)
   const [confirmText, setConfirmText] = useState('')
@@ -15,7 +32,7 @@ function Settings({ userEmail }) {
 
     if (invokeError) {
       setDeleting(false)
-      setError(invokeError.message)
+      setError(await extractFunctionErrorMessage(invokeError))
       return
     }
     if (data?.error) {

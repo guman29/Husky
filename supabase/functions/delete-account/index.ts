@@ -92,11 +92,13 @@ Deno.serve(async (req) => {
     // and reminders automatically, per the foreign keys in schema.sql.
     const { error: deleteError } = await adminClient.auth.admin.deleteUser(user.id)
     if (deleteError) {
+      console.error('delete-account: auth.admin.deleteUser failed:', deleteError)
       return jsonResponse({ error: deleteError.message }, 500)
     }
 
     return jsonResponse({ success: true })
   } catch (error) {
+    console.error('delete-account: unhandled error:', error)
     return jsonResponse({ error: error instanceof Error ? error.message : String(error) }, 500)
   }
 })
