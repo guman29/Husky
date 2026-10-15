@@ -9,6 +9,7 @@ import {
   ageToYears,
   formatAge,
 } from '../petData'
+import { REPORT_REASONS } from '../reportReasons'
 
 const EMPTY_ANSWERS = { species: '', breed: '', size: '', agePref: '' }
 
@@ -36,7 +37,38 @@ function matchesListing(listing, answers) {
   return true
 }
 
-function ListingCard({ listing, onMessageSeller }) {
+function ListingCard({ listing, userId, onMessageSeller }) {
+  const [reporting, setReporting] = useState(false)
+  const [reason, setReason] = useState('')
+  const [note, setNote] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState(null)
+
+  async function handleSubmitReport(event) {
+    event.preventDefault()
+    setError(null)
+    setSubmitting(true)
+
+    const { error: insertError } = await supabase.from('reports').insert({
+      reporter_id: userId,
+      reported_user_id: listing.seller_id,
+      listing_id: listing.id,
+      reason,
+      note: note.trim() || null,
+    })
+
+    setSubmitting(false)
+
+    if (insertError) {
+      setError(insertError.message)
+      return
+    }
+
+    setSubmitted(true)
+    setReporting(false)
+  }
+
   return (
     <li className="listing-card">
       {listing.photo_urls?.length > 0 && (
@@ -58,9 +90,58 @@ function ListingCard({ listing, onMessageSeller }) {
         {listing.location ? ` · ${listing.location}` : ''}
       </p>
       {listing.description && <p>{listing.description}</p>}
-      <button type="button" onClick={() => onMessageSeller(listing)}>
-        Message seller
-      </button>
+
+      <div className="item-actions">
+        <button type="button" onClick={() => onMessageSeller(listing)}>
+          Message seller
+        </button>
+        {!submitted && (
+          <button type="button" className="icon-btn" onClick={() => setReporting((v) => !v)}>
+            🚩 Report
+          </button>
+        )}
+      </div>
+
+      {submitted && <p className="hint">✅ Thanks -- we'll review this report.</p>}
+
+      {reporting && (
+        <form className="inline-edit-form" onSubmit={handleSubmitReport}>
+          <label htmlFor={`report-reason-${listing.id}`}>Why are you reporting this listing?</label>
+          <select
+            id={`report-reason-${listing.id}`}
+            value={reason}
+            onChange={(event) => setReason(event.target.value)}
+            required
+          >
+            <option value="" disabled>
+              Select a reason…
+            </option>
+            {REPORT_REASONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+
+          <label htmlFor={`report-note-${listing.id}`}>Additional details (optional)</label>
+          <textarea
+            id={`report-note-${listing.id}`}
+            value={note}
+            onChange={(event) => setNote(event.target.value)}
+          />
+
+          {error && <p className="error">{error}</p>}
+
+          <div className="item-actions">
+            <button type="submit" disabled={submitting}>
+              {submitting ? 'Submitting…' : 'Submit report'}
+            </button>
+            <button type="button" className="secondary-btn" onClick={() => setReporting(false)}>
+              Cancel
+            </button>
+          </div>
+        </form>
+      )}
     </li>
   )
 }
@@ -214,7 +295,12 @@ function BrowsePets({ userId, onMessageSeller }) {
       ) : (
         <ul>
           {matches.map((listing) => (
-            <ListingCard key={listing.id} listing={listing} onMessageSeller={onMessageSeller} />
+            <ListingCard
+              key={listing.id}
+              listing={listing}
+              userId={userId}
+              onMessageSeller={onMessageSeller}
+            />
           ))}
         </ul>
       )}
