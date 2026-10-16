@@ -330,6 +330,41 @@ create policy "Users can manage their own reminders"
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);
 
+-- block_exists_between: used by the listings/messages RLS policies below
+-- to check for a block between two users. A plain "not exists (select 1
+-- from blocks where ...)" subquery inside a policy would run under the
+-- CALLING user's own RLS visibility into blocks -- and blocks' own select
+-- policy only lets a user see rows where THEY are the blocker, so a
+-- blocked user's copy of that subquery could never see the block row
+-- that matters (the one where someone else blocked THEM), silently
+-- defeating enforcement in that direction. SECURITY DEFINER makes this
+-- function run with its owner's privileges instead, so it can see every
+-- row in blocks regardless of who's calling it -- while its own logic
+-- restricts it to only ever answering for a pair that includes the
+-- caller, so it can't be used as a general "does X block Y" oracle for
+-- arbitrary other users. search_path is pinned explicitly, standard
+-- practice for SECURITY DEFINER functions, so it can't be redirected by a
+-- malicious search_path. EXECUTE is granted only to authenticated.
+create or replace function public.block_exists_between(user_a uuid, user_b uuid)
+returns boolean
+language sql
+security definer
+set search_path = public, pg_temp
+stable
+as $$
+  select case
+    when auth.uid() is null or (auth.uid() <> user_a and auth.uid() <> user_b) then false
+    else exists (
+      select 1 from public.blocks
+      where (blocker_id = user_a and blocked_id = user_b)
+         or (blocker_id = user_b and blocked_id = user_a)
+    )
+  end;
+$$;
+
+revoke all on function public.block_exists_between(uuid, uuid) from public;
+grant execute on function public.block_exists_between(uuid, uuid) to authenticated;
+
 alter table public.listings enable row level security;
 
 -- Unlike every other table so far, listings are meant to be browsed by
@@ -343,11 +378,7 @@ create policy "Any signed-in user can view listings"
   for select
   using (
     auth.uid() is not null
-    and not exists (
-      select 1 from public.blocks
-      where blocks.blocker_id = auth.uid()
-        and blocks.blocked_id = listings.seller_id
-    )
+    and not public.block_exists_between(auth.uid(), seller_id)
   );
 
 create policy "Users can create their own listings"
@@ -376,17 +407,15 @@ create policy "Users can view messages they sent or received"
 -- Also blocks sending if either party has blocked the other, in either
 -- direction (marketplace/chat safety) -- enforced here, at the database
 -- level, so a blocked user can't message around it by calling the API
--- directly.
+-- directly. Uses block_exists_between (see above) rather than a direct
+-- subquery against blocks, since blocks' own RLS would otherwise hide the
+-- one row that matters from the blocked user's own point of view.
 create policy "Users can send messages as themselves"
   on public.messages
   for insert
   with check (
     auth.uid() = sender_id
-    and not exists (
-      select 1 from public.blocks
-      where (blocks.blocker_id = sender_id and blocks.blocked_id = recipient_id)
-         or (blocks.blocker_id = recipient_id and blocks.blocked_id = sender_id)
-    )
+    and not public.block_exists_between(sender_id, recipient_id)
   );
 
 alter table public.reports enable row level security;
