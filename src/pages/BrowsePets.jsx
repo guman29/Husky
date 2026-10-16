@@ -10,6 +10,7 @@ import {
   formatAge,
 } from '../petData'
 import { REPORT_REASONS } from '../reportReasons'
+import MarketplaceRulesNotice from '../components/MarketplaceRulesNotice'
 
 const EMPTY_ANSWERS = { species: '', breed: '', size: '', agePref: '' }
 
@@ -325,6 +326,8 @@ function BrowsePets({ userId, onMessageSeller }) {
           {hasAnyAnswer ? 'Refine your search' : 'Answer a few questions'}
         </button>
       </div>
+
+      <MarketplaceRulesNotice />
 
       {error && <p className="error">{error}</p>}
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../supabaseClient'
 import { SPECIES_OPTIONS, SIZE_OPTIONS, AGE_UNIT_OPTIONS, breedsFor, formatAge } from '../petData'
 import ListingPhotoUpload from '../components/ListingPhotoUpload'
+import MarketplaceRulesNotice from '../components/MarketplaceRulesNotice'
 
 function SellPet({ userId, userEmail }) {
   const [myListings, setMyListings] = useState([])
@@ -15,6 +16,7 @@ function SellPet({ userId, userEmail }) {
   const [ageUnit, setAgeUnit] = useState('year')
   const [location, setLocation] = useState('')
   const [description, setDescription] = useState('')
+  const [agreedToRules, setAgreedToRules] = useState(false)
   const [error, setError] = useState(null)
   const [saving, setSaving] = useState(false)
 
@@ -49,6 +51,12 @@ function SellPet({ userId, userEmail }) {
   async function handleSubmit(event) {
     event.preventDefault()
     setError(null)
+
+    if (!agreedToRules) {
+      setError('Please confirm you’ve read and agree to the marketplace rules.')
+      return
+    }
+
     setSaving(true)
 
     const { data, error } = await supabase
@@ -81,6 +89,7 @@ function SellPet({ userId, userEmail }) {
     setAgeUnit('year')
     setLocation('')
     setDescription('')
+    setAgreedToRules(false)
     setCreating(false)
     setJustCreatedId(data.id)
     setMyListings((prev) => [data, ...prev])
@@ -218,102 +227,122 @@ function SellPet({ userId, userEmail }) {
       )}
 
       {!justCreatedListing && creating && (
-        <form onSubmit={handleSubmit}>
-          <p className="hint">
-            🔎 Once posted, everything below (photos, breed, age, location, description) will be
-            visible to any signed-in Husky user browsing the marketplace.
-          </p>
+        <>
+          <MarketplaceRulesNotice />
 
-          <label htmlFor="listing-type">Type</label>
-          <select
-            id="listing-type"
-            value={petType}
-            onChange={(event) => {
-              setPetType(event.target.value)
-              setBreed('')
-            }}
-            required
-          >
-            <option value="" disabled>
-              Select a type…
-            </option>
-            {SPECIES_OPTIONS.map((option) => (
-              <option key={option} value={option}>
-                {option}
+          <form onSubmit={handleSubmit}>
+            <label htmlFor="listing-type">Type</label>
+            <select
+              id="listing-type"
+              value={petType}
+              onChange={(event) => {
+                setPetType(event.target.value)
+                setBreed('')
+              }}
+              required
+            >
+              <option value="" disabled>
+                Select a type…
               </option>
-            ))}
-          </select>
-
-          <label htmlFor="listing-breed">Breed</label>
-          <select
-            id="listing-breed"
-            value={breed}
-            onChange={(event) => setBreed(event.target.value)}
-            disabled={!petType}
-          >
-            <option value="">Not specified</option>
-            {breedsFor(petType).map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-
-          <label htmlFor="listing-size">Size</label>
-          <select id="listing-size" value={size} onChange={(event) => setSize(event.target.value)}>
-            <option value="">Not specified</option>
-            {SIZE_OPTIONS.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-
-          <label htmlFor="listing-age-value">Age</label>
-          <div className="inline-fields">
-            <input
-              id="listing-age-value"
-              type="number"
-              min="0"
-              step="1"
-              placeholder="e.g. 8"
-              value={ageValue}
-              onChange={(event) => setAgeValue(event.target.value)}
-            />
-            <select value={ageUnit} onChange={(event) => setAgeUnit(event.target.value)}>
-              {AGE_UNIT_OPTIONS.map((option) => (
+              {SPECIES_OPTIONS.map((option) => (
                 <option key={option} value={option}>
-                  {option}s
+                  {option}
                 </option>
               ))}
             </select>
-          </div>
 
-          <label htmlFor="listing-location">Location</label>
-          <input
-            id="listing-location"
-            type="text"
-            placeholder="City, state"
-            value={location}
-            onChange={(event) => setLocation(event.target.value)}
-          />
+            <label htmlFor="listing-breed">Breed</label>
+            <select
+              id="listing-breed"
+              value={breed}
+              onChange={(event) => setBreed(event.target.value)}
+              disabled={!petType}
+            >
+              <option value="">Not specified</option>
+              {breedsFor(petType).map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
 
-          <label htmlFor="listing-description">Description</label>
-          <textarea
-            id="listing-description"
-            value={description}
-            onChange={(event) => setDescription(event.target.value)}
-          />
+            <label htmlFor="listing-size">Size</label>
+            <select
+              id="listing-size"
+              value={size}
+              onChange={(event) => setSize(event.target.value)}
+            >
+              <option value="">Not specified</option>
+              {SIZE_OPTIONS.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
 
-          <div className="item-actions">
-            <button type="submit" disabled={saving}>
-              {saving ? 'Posting…' : 'Post listing'}
-            </button>
-            <button type="button" className="secondary-btn" onClick={() => setCreating(false)}>
-              Cancel
-            </button>
-          </div>
-        </form>
+            <label htmlFor="listing-age-value">Age</label>
+            <div className="inline-fields">
+              <input
+                id="listing-age-value"
+                type="number"
+                min="0"
+                step="1"
+                placeholder="e.g. 8"
+                value={ageValue}
+                onChange={(event) => setAgeValue(event.target.value)}
+              />
+              <select value={ageUnit} onChange={(event) => setAgeUnit(event.target.value)}>
+                {AGE_UNIT_OPTIONS.map((option) => (
+                  <option key={option} value={option}>
+                    {option}s
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <label htmlFor="listing-location">Location</label>
+            <input
+              id="listing-location"
+              type="text"
+              placeholder="City, state"
+              value={location}
+              onChange={(event) => setLocation(event.target.value)}
+            />
+
+            <label htmlFor="listing-description">Description</label>
+            <textarea
+              id="listing-description"
+              value={description}
+              onChange={(event) => setDescription(event.target.value)}
+            />
+
+            <label className="checkbox-label">
+              <input
+                type="checkbox"
+                checked={agreedToRules}
+                onChange={(event) => setAgreedToRules(event.target.checked)}
+              />
+              I've read and agree to these rules
+            </label>
+
+            <div className="item-actions">
+              <button type="submit" disabled={saving || !agreedToRules}>
+                {saving ? 'Posting…' : 'Post listing'}
+              </button>
+              <button
+                type="button"
+                className="secondary-btn"
+                onClick={() => {
+                  setCreating(false)
+                  setAgreedToRules(false)
+                  setError(null)
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </>
       )}
 
       {!justCreatedListing && !creating && (
