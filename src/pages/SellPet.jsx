@@ -322,7 +322,14 @@ function SellPet({ userId, userEmail }) {
                 checked={agreedToRules}
                 onChange={(event) => setAgreedToRules(event.target.checked)}
               />
-              I've read and agree to these rules
+              {/* Opens in a new tab rather than navigating away, so an
+                  in-progress listing (species/breed/description already
+                  typed) isn't lost -- Husky has no client-side router, so
+                  a same-tab link here would be a full page navigation. */}
+              I've read and agree to these rules and the{' '}
+              <a href="/terms" target="_blank" rel="noreferrer">
+                Terms of Use
+              </a>
             </label>
 
             <div className="item-actions">

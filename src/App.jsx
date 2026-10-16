@@ -18,16 +18,19 @@ import Chat from './pages/Chat'
 import Settings from './pages/Settings'
 import PrivacyPolicy from './pages/PrivacyPolicy'
 import DeleteAccountInfo from './pages/DeleteAccountInfo'
+import TermsOfUse from './pages/TermsOfUse'
 import AppHeader from './components/AppHeader'
 import './styles/index.css'
 
-// A couple of pages (privacy policy, account deletion) need to be reachable
-// as plain public URLs -- Google Play requires this -- without waiting on
-// Supabase or requiring a session. Husky has no router, so this is checked
-// directly, ahead of all the normal logged-in/out logic below.
+// A few pages (privacy policy, account deletion, terms of use) need to be
+// reachable as plain public URLs -- Google Play requires this for the
+// first two -- without waiting on Supabase or requiring a session. Husky
+// has no router, so this is checked directly, ahead of all the normal
+// logged-in/out logic below.
 const PUBLIC_ROUTES = {
   '/privacy': PrivacyPolicy,
   '/delete-account': DeleteAccountInfo,
+  '/terms': TermsOfUse,
 }
 
 function App() {

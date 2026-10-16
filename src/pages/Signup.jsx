@@ -73,6 +73,11 @@ function Signup({ onSwitchToLogin }) {
         </button>
       </form>
 
+      <p className="hint">
+        By signing up, you agree to our <a href="/terms">Terms of Use</a> and{' '}
+        <a href="/privacy">Privacy Policy</a>.
+      </p>
+
       <p>
         Already have an account?{' '}
         <button type="button" className="link-button" onClick={onSwitchToLogin}>

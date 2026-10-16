@@ -100,6 +100,13 @@ function Settings({ userId, userEmail }) {
       </section>
 
       <section>
+        <h2>Legal</h2>
+        <p>
+          <a href="/terms">Terms of Use</a> · <a href="/privacy">Privacy Policy</a>
+        </p>
+      </section>
+
+      <section>
         <h2>Blocked users</h2>
         <p>
           People you've blocked can't see this list -- blocking is only visible to you. Unblocking
