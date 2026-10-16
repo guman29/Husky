@@ -147,7 +147,7 @@ function App() {
 
   let pageContent
   if (view === 'settings') {
-    pageContent = <Settings userEmail={session.user.email} />
+    pageContent = <Settings userId={session.user.id} userEmail={session.user.email} />
   } else if (view === 'browse-pets') {
     pageContent = (
       <BrowsePets

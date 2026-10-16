@@ -9,17 +9,32 @@ function Inbox({ userId, onOpenChat }) {
   useEffect(() => {
     async function loadThreads() {
       setLoading(true)
-      const { data, error } = await supabase
-        .from('messages')
-        .select('*, listings(pet_type, seller_id, seller_email)')
-        .or(`sender_id.eq.${userId},recipient_id.eq.${userId}`)
-        .order('created_at', { ascending: false })
+
+      // Fetched separately from messages (rather than joined) since blocks
+      // is its own table with no foreign key tying it to messages.
+      const [messagesResult, blocksResult] = await Promise.all([
+        supabase
+          .from('messages')
+          .select('*, listings(pet_type, seller_id, seller_email)')
+          .or(`sender_id.eq.${userId},recipient_id.eq.${userId}`)
+          .order('created_at', { ascending: false }),
+        supabase.from('blocks').select('blocked_id').eq('blocker_id', userId),
+      ])
+
+      const { data, error } = messagesResult
 
       if (error) {
         setError(error.message)
         setLoading(false)
         return
       }
+
+      // A conversation with someone you've blocked is hidden from view
+      // here -- this is a display preference on your own data (you still
+      // have full read access to these messages), not a security
+      // boundary; the actual enforcement (they can't message you) happens
+      // at the database level via the messages insert policy.
+      const blockedIds = new Set((blocksResult.data || []).map((block) => block.blocked_id))
 
       // Group messages into one thread per (listing, other participant).
       // Messages arrive newest-first, so the first message seen for a key
@@ -28,6 +43,8 @@ function Inbox({ userId, onOpenChat }) {
 
       for (const message of data) {
         const otherUserId = message.sender_id === userId ? message.recipient_id : message.sender_id
+        if (blockedIds.has(otherUserId)) continue
+
         const key = `${message.listing_id}_${otherUserId}`
 
         if (!threadsMap.has(key)) {

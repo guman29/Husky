@@ -202,6 +202,25 @@ create index reports_reported_user_id_idx on public.reports (reported_user_id);
 create index reports_listing_id_idx on public.reports (listing_id);
 
 -- ---------------------------------------------------------------------------
+-- blocks: one user blocking another (marketplace/chat safety). blocked_email
+-- is captured at block-creation time from the client, the same pattern used
+-- for seller_email/sender_email above, since the client can't look up
+-- another user's email from auth.users directly.
+-- ---------------------------------------------------------------------------
+create table public.blocks (
+  id uuid primary key default gen_random_uuid(),
+  blocker_id uuid not null references auth.users (id) on delete cascade,
+  blocked_id uuid not null references auth.users (id) on delete cascade,
+  blocked_email text,
+  created_at timestamptz not null default now(),
+  unique (blocker_id, blocked_id),
+  check (blocker_id <> blocked_id)
+);
+
+create index blocks_blocker_id_idx on public.blocks (blocker_id);
+create index blocks_blocked_id_idx on public.blocks (blocked_id);
+
+-- ---------------------------------------------------------------------------
 -- Row Level Security: without this, anyone with your publishable key could
 -- read or write ANY row in these tables. Enabling it turns access off by
 -- default; the policies below turn it back on only for a user's own data.
@@ -316,10 +335,20 @@ alter table public.listings enable row level security;
 -- Unlike every other table so far, listings are meant to be browsed by
 -- everyone, not just their owner -- that's the whole point of a
 -- marketplace. Only creating/editing/deleting is restricted to the seller.
+-- Also excludes listings from anyone the viewer has blocked (marketplace
+-- safety) -- enforced here, at the database level, rather than just
+-- filtered out in the UI.
 create policy "Any signed-in user can view listings"
   on public.listings
   for select
-  using (auth.uid() is not null);
+  using (
+    auth.uid() is not null
+    and not exists (
+      select 1 from public.blocks
+      where blocks.blocker_id = auth.uid()
+        and blocks.blocked_id = listings.seller_id
+    )
+  );
 
 create policy "Users can create their own listings"
   on public.listings
@@ -344,10 +373,21 @@ create policy "Users can view messages they sent or received"
   for select
   using (auth.uid() = sender_id or auth.uid() = recipient_id);
 
+-- Also blocks sending if either party has blocked the other, in either
+-- direction (marketplace/chat safety) -- enforced here, at the database
+-- level, so a blocked user can't message around it by calling the API
+-- directly.
 create policy "Users can send messages as themselves"
   on public.messages
   for insert
-  with check (auth.uid() = sender_id);
+  with check (
+    auth.uid() = sender_id
+    and not exists (
+      select 1 from public.blocks
+      where (blocks.blocker_id = sender_id and blocks.blocked_id = recipient_id)
+         or (blocks.blocker_id = recipient_id and blocks.blocked_id = sender_id)
+    )
+  );
 
 alter table public.reports enable row level security;
 
@@ -359,6 +399,26 @@ create policy "Users can submit reports as themselves"
   on public.reports
   for insert
   with check (auth.uid() = reporter_id);
+
+alter table public.blocks enable row level security;
+
+-- A user can only ever see blocks where THEY are the blocker -- never rows
+-- where they're the one being blocked. This is what keeps a blocked user
+-- from being able to discover that they've been blocked.
+create policy "Users can view their own blocks"
+  on public.blocks
+  for select
+  using (auth.uid() = blocker_id);
+
+create policy "Users can create their own blocks"
+  on public.blocks
+  for insert
+  with check (auth.uid() = blocker_id);
+
+create policy "Users can delete their own blocks"
+  on public.blocks
+  for delete
+  using (auth.uid() = blocker_id);
 
 -- ---------------------------------------------------------------------------
 -- Storage: pet avatar photos. Files live at <owner_id>/<pet_id>.<ext> so the

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { supabase } from '../supabaseClient'
 
 // When an Edge Function returns a non-2xx response, supabase-js wraps it as
@@ -18,11 +18,53 @@ async function extractFunctionErrorMessage(invokeError) {
   return invokeError.message
 }
 
-function Settings({ userEmail }) {
+function Settings({ userId, userEmail }) {
   const [confirming, setConfirming] = useState(false)
   const [confirmText, setConfirmText] = useState('')
   const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState(null)
+
+  const [blocks, setBlocks] = useState([])
+  const [blocksLoading, setBlocksLoading] = useState(true)
+  const [blocksError, setBlocksError] = useState(null)
+  const [unblockingId, setUnblockingId] = useState(null)
+
+  async function loadBlocks() {
+    setBlocksLoading(true)
+    const { data, error: loadError } = await supabase
+      .from('blocks')
+      .select('*')
+      .eq('blocker_id', userId)
+      .order('created_at', { ascending: false })
+
+    if (loadError) {
+      setBlocksError(loadError.message)
+    } else {
+      setBlocksError(null)
+      setBlocks(data)
+    }
+    setBlocksLoading(false)
+  }
+
+  useEffect(() => {
+    loadBlocks()
+  }, [userId])
+
+  async function handleUnblock(blockId) {
+    setBlocksError(null)
+    setUnblockingId(blockId)
+
+    const { error: deleteError } = await supabase.from('blocks').delete().eq('id', blockId)
+
+    setUnblockingId(null)
+
+    if (deleteError) {
+      setBlocksError(deleteError.message)
+      return
+    }
+
+    setBlocks((prev) => prev.filter((block) => block.id !== blockId))
+  }
 
   async function handleDelete() {
     setError(null)
@@ -55,6 +97,40 @@ function Settings({ userEmail }) {
         <p>
           Signed in as <strong>{userEmail}</strong>
         </p>
+      </section>
+
+      <section>
+        <h2>Blocked users</h2>
+        <p>
+          People you've blocked can't see this list -- blocking is only visible to you. Unblocking
+          someone lets you message each other again and un-hides their listings.
+        </p>
+
+        {blocksError && <p className="error">{blocksError}</p>}
+
+        {blocksLoading ? (
+          <p>Loading…</p>
+        ) : blocks.length === 0 ? (
+          <p className="hint">You haven't blocked anyone.</p>
+        ) : (
+          <ul>
+            {blocks.map((block) => (
+              <li key={block.id} className="log-item">
+                <div>{block.blocked_email || 'Blocked user'}</div>
+                <div className="item-actions">
+                  <button
+                    type="button"
+                    className="icon-btn"
+                    onClick={() => handleUnblock(block.id)}
+                    disabled={unblockingId === block.id}
+                  >
+                    {unblockingId === block.id ? 'Unblocking…' : 'Unblock'}
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
 
       <section>

@@ -2,11 +2,19 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../supabaseClient'
 import { REPORT_REASONS } from '../reportReasons'
 
+// A message insert can fail because of the blocks-aware RLS policy on the
+// messages table -- deliberately shown as a neutral message rather than
+// "you've been blocked" (the other person shouldn't be told either way).
+function isLikelyBlockRestriction(error) {
+  return error.code === '42501' || /row-level security policy/i.test(error.message || '')
+}
+
 function Chat({ userId, userEmail, listingId, otherUserId, otherEmail, petType, onBack }) {
   const [messages, setMessages] = useState([])
   const [body, setBody] = useState('')
   const [error, setError] = useState(null)
   const [sending, setSending] = useState(false)
+  const [blocking, setBlocking] = useState(false)
 
   const [reporting, setReporting] = useState(false)
   const [reportReason, setReportReason] = useState('')
@@ -52,12 +60,42 @@ function Chat({ userId, userEmail, listingId, otherUserId, otherEmail, petType, 
     setSending(false)
 
     if (error) {
-      setError(error.message)
+      setError(isLikelyBlockRestriction(error) ? "This message couldn't be sent." : error.message)
       return
     }
 
     setBody('')
     loadMessages()
+  }
+
+  async function handleBlock() {
+    if (
+      !window.confirm(
+        `Block ${otherEmail || 'this user'}? You won't see their listings anymore, and neither of you will be able to message the other.`,
+      )
+    ) {
+      return
+    }
+
+    setError(null)
+    setBlocking(true)
+
+    const { error: insertError } = await supabase.from('blocks').insert({
+      blocker_id: userId,
+      blocked_id: otherUserId,
+      blocked_email: otherEmail,
+    })
+
+    setBlocking(false)
+
+    if (insertError) {
+      setError(insertError.message)
+      return
+    }
+
+    // This conversation should disappear from view immediately, same as
+    // it will from Inbox on next load.
+    onBack()
   }
 
   async function handleSubmitReport(event) {
@@ -101,6 +139,9 @@ function Chat({ userId, userEmail, listingId, otherUserId, otherEmail, petType, 
             🚩 Report user
           </button>
         )}
+        <button type="button" className="icon-btn danger" onClick={handleBlock} disabled={blocking}>
+          {blocking ? 'Blocking…' : '🚫 Block user'}
+        </button>
       </div>
 
       {reportSubmitted && <p className="hint">✅ Thanks -- we'll review this report.</p>}

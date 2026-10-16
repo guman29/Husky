@@ -37,12 +37,13 @@ function matchesListing(listing, answers) {
   return true
 }
 
-function ListingCard({ listing, userId, onMessageSeller }) {
+function ListingCard({ listing, userId, onMessageSeller, onBlocked }) {
   const [reporting, setReporting] = useState(false)
   const [reason, setReason] = useState('')
   const [note, setNote] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [blocking, setBlocking] = useState(false)
   const [error, setError] = useState(null)
 
   async function handleSubmitReport(event) {
@@ -67,6 +68,37 @@ function ListingCard({ listing, userId, onMessageSeller }) {
 
     setSubmitted(true)
     setReporting(false)
+  }
+
+  async function handleBlock() {
+    if (
+      !window.confirm(
+        `Block this seller? You won't see their listings anymore, and neither of you will be able to message the other.`,
+      )
+    ) {
+      return
+    }
+
+    setError(null)
+    setBlocking(true)
+
+    const { error: insertError } = await supabase.from('blocks').insert({
+      blocker_id: userId,
+      blocked_id: listing.seller_id,
+      blocked_email: listing.seller_email,
+    })
+
+    setBlocking(false)
+
+    if (insertError) {
+      setError(insertError.message)
+      return
+    }
+
+    // Remove every listing from this seller from the current results
+    // immediately -- the RLS policy change handles hiding them on every
+    // future fetch, but this gives instant feedback without a reload.
+    onBlocked(listing.seller_id)
   }
 
   return (
@@ -100,9 +132,13 @@ function ListingCard({ listing, userId, onMessageSeller }) {
             🚩 Report
           </button>
         )}
+        <button type="button" className="icon-btn danger" onClick={handleBlock} disabled={blocking}>
+          {blocking ? 'Blocking…' : '🚫 Block seller'}
+        </button>
       </div>
 
       {submitted && <p className="hint">✅ Thanks -- we'll review this report.</p>}
+      {error && !reporting && <p className="error">{error}</p>}
 
       {reporting && (
         <form className="inline-edit-form" onSubmit={handleSubmitReport}>
@@ -188,6 +224,10 @@ function BrowsePets({ userId, onMessageSeller }) {
 
   function handleRefine() {
     setStep('quiz')
+  }
+
+  function handleBlocked(blockedSellerId) {
+    setListings((prev) => prev.filter((listing) => listing.seller_id !== blockedSellerId))
   }
 
   // Browsing is for finding a pet from someone else -- your own listings
@@ -300,6 +340,7 @@ function BrowsePets({ userId, onMessageSeller }) {
               listing={listing}
               userId={userId}
               onMessageSeller={onMessageSeller}
+              onBlocked={handleBlocked}
             />
           ))}
         </ul>
