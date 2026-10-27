@@ -16,7 +16,9 @@ import ActivityLog from '../components/ActivityLog'
 const TABS = [
   { key: 'vaccines', label: 'Vaccines', icon: '💉' },
   { key: 'vet-visits', label: 'Vet visits', icon: '🩺' },
-  { key: 'feeding', label: 'Feeding', icon: '🍽️' },
+  // 🍽️ (plate+cutlery) renders as a near-white, low-contrast glyph on most
+  // platforms -- 🥣 (feeding bowl) is just as apt and has real color.
+  { key: 'feeding', label: 'Feeding', icon: '🥣' },
   { key: 'weight', label: 'Weight', icon: '⚖️' },
   { key: 'grooming', label: 'Grooming', icon: '🧼' },
   { key: 'activity', label: 'Activity', icon: '🎾' },
@@ -274,11 +276,13 @@ function PetDetail({ petId, onBack }) {
               <button
                 key={tab.key}
                 type="button"
-                className={`nav-item${activeTab === tab.key ? ' active' : ''}`}
+                className={`pet-tab${activeTab === tab.key ? ' active' : ''}`}
                 onClick={() => setActiveTab(tab.key)}
               >
-                <span aria-hidden="true">{tab.icon}</span>
-                <span className="nav-label">{tab.label}</span>
+                <span className="pet-tab-icon" aria-hidden="true">
+                  {tab.icon}
+                </span>
+                <span>{tab.label}</span>
               </button>
             ))}
           </div>
@@ -312,7 +316,7 @@ function PetDetail({ petId, onBack }) {
 
             {activeTab === 'feeding' && (
               <>
-                <h2>🍽️ Feeding log</h2>
+                <h2>🥣 Feeding log</h2>
                 <FeedingLog petId={petId} petName={pet.name} ownerId={pet.owner_id} />
               </>
             )}

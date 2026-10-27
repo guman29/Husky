@@ -181,7 +181,7 @@ function FeedingLog({ petId, petName, ownerId }) {
               <div key={entry.id} className="log-item log-card log-card-feeding">
                 <div className="log-card-header">
                   <span className="log-card-icon" aria-hidden="true">
-                    🍽️
+                    🥣
                   </span>
                   <div>
                     <div className="log-card-title">{entry.food}</div>
