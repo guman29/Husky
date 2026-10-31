@@ -2,8 +2,14 @@
 // chart used on the grooming and activity logs -- no charting library is
 // installed, so these just prep plain numbers for a CSS bar chart.
 
+// Local calendar-day key (YYYY-MM-DD) -- deliberately avoids toISOString(),
+// which converts to UTC and would put entries a day off from the viewer's
+// actual calendar day whenever the local and UTC dates differ.
 function dayKey(date) {
-  return date.toISOString().slice(0, 10)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
 }
 
 // Consecutive days with at least one entry, counting back from today. If
@@ -11,7 +17,7 @@ function dayKey(date) {
 // grace period) so the streak doesn't drop to 0 every morning before the
 // day's entry is logged.
 export function computeStreak(dateStrings) {
-  const days = new Set(dateStrings.map((value) => value.slice(0, 10)))
+  const days = new Set(dateStrings.map((value) => dayKey(new Date(value))))
   const cursor = new Date()
   cursor.setHours(0, 0, 0, 0)
 
@@ -40,7 +46,7 @@ export function lastNDayBuckets(entries, days, dateOf, valueOf = () => 1) {
   for (let i = 0; i < days; i++) {
     const key = dayKey(cursor)
     const value = entries
-      .filter((entry) => dateOf(entry).slice(0, 10) === key)
+      .filter((entry) => dayKey(new Date(dateOf(entry))) === key)
       .reduce((sum, entry) => sum + valueOf(entry), 0)
     buckets.push({ label: cursor.toLocaleDateString(undefined, { weekday: 'short' }), value })
     cursor.setDate(cursor.getDate() + 1)
